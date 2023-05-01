@@ -5,11 +5,13 @@ import { InjectModel } from '@nestjs/sequelize';
 import { MatchName } from './models/match-name.model';
 import { toUSVString } from 'util';
 import { timestamp } from 'rxjs';
+import { Match } from 'src/match/models/match.model';
 
 @Injectable()
 export class MatchNameService {
   constructor(
     @InjectModel(MatchName) private matchNameRepo: typeof MatchName,
+    @InjectModel(Match) private matchRepo: typeof Match,
   ) { }
   async createMatchName(createMatchNameDto: CreateMatchNameDto) {
     try {
@@ -48,31 +50,38 @@ export class MatchNameService {
 
   async findWeekStart() {
     try {
-      await this.matchNameRepo.findAll({include: {all: true}})
+      await this.matchNameRepo.findAll({ include: { all: true } })
     } catch (error) {
       console.log(error);
       throw new NotFoundException
     }
-    const week = await this.matchNameRepo.findAll({include: {all: true}})
+    const week = await this.matchNameRepo.findAll({ include: { all: true } })
     // console.log(week);
-    
+
     const weekfinished = new Date()
     weekfinished.setDate(weekfinished.getDate() + 7);
-    console.log(weekfinished);
-    
-    const day = weekfinished.getDate() - 1
-    const month = weekfinished.getMonth() + 1
-    const year = weekfinished.getFullYear()
-    const time = weekfinished.getHours()
-    const min = weekfinished.getMinutes()
+
+    const newDate = new Date()
+    newDate.setDate(newDate.getDate());
+    // console.log(week);
 
 
-    let list = '';
-    let a = week[0].dataValues.match;
+    let lists = [];
+    let find: any;
+
+    const a = week[0].dataValues.finishedmatch;
     for (let i in a) {
-      list = a[i].dataValues.date
-      list.split('.')
-    } 
+      
+      const list = new Date(a[i].dataValues.date)
+      list.setDate(list.getDate() + 1)
+
+
+      if (weekfinished >= list && list >= newDate) {
+        find = await this.matchRepo.findOne({ where: { id: a[i].dataValues.id } })
+        lists.push(find)
+        console.log(a[i].dataValues.id);
+      }
+    }
   }
 
   async findWeekFinish() {
@@ -83,10 +92,36 @@ export class MatchNameService {
       throw new NotFoundException
     }
     const week = await this.matchNameRepo.findAll()
-    let a = week[0].dataValues.match;
+
+    const weekfinished = new Date()
+    weekfinished.setDate(weekfinished.getDate() - 7);
+
+    const newDate = new Date()
+    newDate.setDate(newDate.getDate());
+
+
+    let lists = [];
+    let find: any;
+
+    const a = week[0].dataValues.match;
     for (let i in a) {
-      console.log(a[i].dataValues.date);
+      const list = new Date(a[i].dataValues.date)
+      list.setDate(list.getDate() + 1)
+
+      console.log(list);
+
+      if (weekfinished <= list && list <= newDate) {
+        find = await this.matchRepo.findOne({ where: { id: a[i].dataValues.id } })
+        lists.push(find)
+        console.log(a[i].dataValues.id);
+      }
     }
+
+    console.log(weekfinished, "finish");
+    console.log(newDate, "new");
+
+
+
   }
 
   async updateMatchName(id: number, updateMatchNameDto: UpdateMatchNameDto) {

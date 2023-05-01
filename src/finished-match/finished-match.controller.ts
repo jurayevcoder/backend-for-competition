@@ -29,13 +29,13 @@ export class FinishedMatchController {
   }
 
   @ApiOperation({summary: "Finished Match update id"})
-  @Put('update:id')
+  @Put('update/:id')
   updateFinishedMatch(@Param('id') id: string, @Body() updateFinishedMatchDto: UpdateFinishedMatchDto) {
     return this.finishedMatchService.updateFinishedMatch(+id, updateFinishedMatchDto);
   }
 
   @ApiOperation({summary: "Finished Match delete id"})
-  @Delete('delete:id')
+  @Delete('delete/:id')
   removeFinishedMatch(@Param('id') id: string) {
     return this.finishedMatchService.removeFinishedMatch(+id);
   }

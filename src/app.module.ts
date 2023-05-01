@@ -7,6 +7,11 @@ import { FinishedMatchModule } from './finished-match/finished-match.module';
 import { Match } from './match/models/match.model';
 import { MatchName } from './match-name/models/match-name.model';
 import { FinishedMatch } from './finished-match/models/finished-match.model';
+import { JadvalModule } from './jadval/jadval.module';
+import { Jadval } from './jadval/models/jadval.model';
+import { NewsModule } from './news/news.module';
+import { News } from './news/models/news.model';
+
 
 @Module({
   imports: [
@@ -18,13 +23,15 @@ import { FinishedMatch } from './finished-match/models/finished-match.model';
       username: process.env.POSTGRES_USER,
       password: String(process.env.POSTGRES_PASSWORD),
       database: process.env.POSTGRES_DB,
-      models: [Match, MatchName, FinishedMatch],
+      models: [Match, MatchName, FinishedMatch, Jadval, News],
       autoLoadModels: true,
       logging: false,
     }),
     MatchModule,
     MatchNameModule,
-    FinishedMatchModule
+    FinishedMatchModule,
+    JadvalModule,
+    NewsModule,
     
     
   ],
